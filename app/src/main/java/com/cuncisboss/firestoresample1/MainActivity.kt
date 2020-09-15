@@ -31,8 +31,28 @@ class MainActivity : AppCompatActivity() {
             savePerson(person)
         }
 
-        btnRetrieveData.setOnClickListener {
-            retrievePerson()
+        subscribeToRealtimeDatabase()
+
+//        btnRetrieveData.setOnClickListener {
+//            retrievePerson()
+//        }
+    }
+
+    private fun subscribeToRealtimeDatabase() {
+        personCollectionPref.addSnapshotListener { value, error ->
+            value?.let {
+                val sb = StringBuilder()
+                for (document in it) {
+                    val person = document.toObject<Person>()
+                    sb.append("$person\n")
+                }
+
+                tvPersons.text = sb.toString()
+            }
+            error?.let {
+                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
         }
     }
 
