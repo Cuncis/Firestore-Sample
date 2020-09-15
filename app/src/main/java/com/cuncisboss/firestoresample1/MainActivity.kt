@@ -1,6 +1,7 @@
 package com.cuncisboss.firestoresample1
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -31,15 +32,15 @@ class MainActivity : AppCompatActivity() {
             savePerson(person)
         }
 
-        subscribeToRealtimeDatabase()
-
-//        btnRetrieveData.setOnClickListener {
-//            retrievePerson()
-//        }
+        btnRetrieveData.setOnClickListener {
+            retrievePerson()
+        }
     }
 
     private fun subscribeToRealtimeDatabase() {
-        personCollectionPref.addSnapshotListener { value, error ->
+        personCollectionPref
+//            .whereEqualTo("firstName", "peter")
+            .addSnapshotListener { value, error ->
             value?.let {
                 val sb = StringBuilder()
                 for (document in it) {
@@ -57,13 +58,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun retrievePerson() = CoroutineScope(Dispatchers.IO).launch {
+        val fromAge = etFrom.text.toString().toInt()
+        val toAge = etTo.text.toString().toInt()
         try {
-            val querySnapshot = personCollectionPref.get().await()
+            val querySnapshot = personCollectionPref
+                .whereGreaterThan("age", fromAge)
+                .whereLessThanOrEqualTo("age", toAge)
+                .orderBy("age")
+                .get()
+                .await()
             val sb = StringBuilder()
             for (document in querySnapshot) {
                 val person = document.toObject<Person>()
                 sb.append("$person\n")
             }
+            Log.d("_logFirebase", "retrievePerson: $sb")
             withContext(Dispatchers.Main) {
                 tvPersons.text = sb.toString()
             }
