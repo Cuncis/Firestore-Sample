@@ -1,20 +1,25 @@
 package com.cuncisboss.firestoresample1
 
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val REQUEST_CODE_SIGN_IN = 0
+    }
 
     private lateinit var auth: FirebaseAuth
 
@@ -23,97 +28,55 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         auth = FirebaseAuth.getInstance()
 
-        btnRegister.setOnClickListener {
-            registerUser()
-        }
-
-        btnLogin.setOnClickListener {
-            loginUser()
-        }
-
-        btnUpdateProfile.setOnClickListener {
-            updateProfile()
-        }
-    }
-
-    private fun updateProfile() {
-        auth.currentUser?.let { user ->
-            val username = etUsername.text.toString()
-            val photoURI = Uri.parse("android.resource://$packageName/$${R.drawable.ic_baseline_image}")
-            val profileUpdates = UserProfileChangeRequest.Builder()
-                .setDisplayName(username)
-                .setPhotoUri(photoURI)
+        btnGoogleSignIn.setOnClickListener {
+            val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.webclient_id))
+                .requestEmail()
                 .build()
+            val signInClient = GoogleSignIn.getClient(this, options)
+            signInClient.signInIntent.also {
+                startActivityForResult(it, REQUEST_CODE_SIGN_IN)
+            }
+        }
+    }
 
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    user.updateProfile(profileUpdates).await()
-                    withContext(Dispatchers.Main) {
-                        checkLoggedInState()
-                        Toast.makeText(this@MainActivity, "Successfully updated user profile", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
-                    }
+    private fun googleAuthForFirebase(account: GoogleSignInAccount) {
+        val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                auth.signInWithCredential(credentials)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Successfully logged in", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        checkLoggedInState()
-    }
-
-    private fun registerUser() {
-        val email = etEmailRegister.text.toString()
-        val password = etPasswordRegister.text.toString()
-
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    auth.createUserWithEmailAndPassword(email, password).await()
-                    withContext(Dispatchers.Main) {
-                        checkLoggedInState()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_SIGN_IN) {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+            account?.let {
+                googleAuthForFirebase(account)
             }
-        }
-    }
-
-    private fun loginUser() {
-        val email = etEmailLogin.text.toString()
-        val password = etPasswordLogin.text.toString()
-
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    auth.signInWithEmailAndPassword(email, password).await()
-                    withContext(Dispatchers.Main) {
-                        checkLoggedInState()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkLoggedInState() {
-        auth.currentUser?.let {
-            tvLoggedIn.text = "You're logged in"
-            etUsername.setText(it.displayName)
-            ivProfilePicture.setImageURI(it.photoUrl)
-            Log.d("_logFirebase", "checkLoggedInState: ${it.displayName} - ${it.photoUrl}")
-        } ?: run {
-            tvLoggedIn.text = "You're not logged in"
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
