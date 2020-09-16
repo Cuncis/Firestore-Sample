@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
         btnBatchedWrite.setOnClickListener {
             changeName("OSgr1JWudeKP9NN6tLvE", "Viga", "Cha")
         }
+
+        btnTransaction.setOnClickListener {
+            birthday("OSgr1JWudeKP9NN6tLvE")
+        }
     }
 
     private fun getOldPerson(): Person {
@@ -73,6 +77,21 @@ class MainActivity : AppCompatActivity() {
             map["age"] = age.toInt()
         }
         return map
+    }
+
+    private fun birthday(personId: String) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            Firebase.firestore.runTransaction { transaction ->
+                val personRef = personCollectionPref.document(personId)
+                val person = transaction.get(personRef)
+                val newAge = person["age"] as Long + 1
+                transaction.update(personRef, "age", newAge)
+            }.await()
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun changeName(
