@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -25,15 +26,70 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         btnUploadData.setOnClickListener {
-            val firstName = etFirstName.text.toString()
-            val lastName = etLastName.text.toString()
-            val age = etAge.text.toString().toInt()
-            val person = Person(firstName, lastName, age)
+            val person = getOldPerson()
             savePerson(person)
         }
 
         btnRetrieveData.setOnClickListener {
             retrievePerson()
+        }
+
+        btnUpdatePerson.setOnClickListener {
+            val oldPerson = getOldPerson()
+            val newPerson = getNewPersonMap()
+            updatePerson(oldPerson, newPerson)
+        }
+    }
+
+    private fun getOldPerson(): Person {
+        val firstName = etFirstName.text.toString()
+        val lastName = etLastName.text.toString()
+        val age = etAge.text.toString().toInt()
+        return Person(firstName, lastName, age)
+    }
+
+    private fun getNewPersonMap(): Map<String, Any> {
+        val firstName = etNewFirstName.text.toString()
+        val lastName = etNewLastName.text.toString()
+        val age = etNewAge.text.toString()
+        val map = mutableMapOf<String, Any>()
+        if (firstName.isNotEmpty()) {
+            map["firstName"] = firstName
+        }
+        if (lastName.isNotEmpty()) {
+            map["lastName"] = lastName
+        }
+        if (age.isNotEmpty()) {
+            map["age"] = age.toInt()
+        }
+        return map
+    }
+
+    private fun updatePerson(person: Person, newPersonMap: Map<String, Any>) = CoroutineScope(Dispatchers.IO).launch {
+        val personQuery = personCollectionPref
+            .whereEqualTo("firstName", person.firstName)
+            .whereEqualTo("lastName", person.lastName)
+            .whereEqualTo("age", person.age.toInt())
+            .get()
+            .await()
+
+        if (personQuery.documents.isNotEmpty()) {
+            for (document in personQuery) {
+                try {
+                    personCollectionPref.document(document.id).set(
+                        newPersonMap,
+                        SetOptions.merge()
+                    )
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } else {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "No person matched the query", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
