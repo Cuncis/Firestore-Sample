@@ -7,184 +7,22 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/etFirstName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="First Name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/etNewFirstName"
-        app:layout_constraintHorizontal_bias="0.5"
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="180dp"
+        android:layout_height="320dp"
+        android:background="#B1B1B1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/etLastName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Last Name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/etNewLastName"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etFirstName" />
-
-    <EditText
-        android:id="@+id/etAge"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Age"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/etNewAge"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etLastName" />
-
-    <EditText
-        android:id="@+id/etNewFirstName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="New First Name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/etFirstName"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/etNewLastName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="New Last Name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/etLastName"
-        app:layout_constraintTop_toBottomOf="@+id/etFirstName" />
-
-    <EditText
-        android:id="@+id/etNewAge"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="New Age"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/etAge"
-        app:layout_constraintTop_toBottomOf="@+id/etLastName" />
-
-
     <Button
-        android:id="@+id/btnUploadData"
-        android:layout_width="0dp"
+        android:id="@+id/btnUploadImage"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Save to database"
-        app:layout_constraintEnd_toStartOf="@+id/btnUpdatePerson"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAge" />
-
-    <Button
-        android:id="@+id/btnRetrieveData"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Retrieve Data"
-        app:layout_constraintEnd_toStartOf="@+id/btnDeletePerson"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnUploadData" />
-
-    <Button
-        android:id="@+id/btnBatchedWrite"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Do Batched Write"
-        app:layout_constraintEnd_toStartOf="@+id/btnDeletePerson"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRetrieveData" />
-
-    <Button
-        android:id="@+id/btnTransaction"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Do Transaction"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnBatchedWrite"
-        app:layout_constraintTop_toBottomOf="@+id/btnRetrieveData" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etTo">
-
-        <TextView
-            android:id="@+id/tvPersons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PERSON DATA"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-    </ScrollView>
-
-
-    <EditText
-        android:id="@+id/etFrom"
-        android:layout_width="75dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="From"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/etTo"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBatchedWrite" />
-
-    <EditText
-        android:id="@+id/etTo"
-        android:layout_width="75dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="To"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/etFrom"
-        app:layout_constraintTop_toBottomOf="@+id/btnBatchedWrite" />
-
-    <Button
-        android:id="@+id/btnUpdatePerson"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Update Person"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnUploadData"
-        app:layout_constraintTop_toBottomOf="@+id/etAge" />
-
-    <Button
-        android:id="@+id/btnDeletePerson"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Delete Person"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnRetrieveData"
-        app:layout_constraintTop_toBottomOf="@+id/btnUpdatePerson" />
+        android:text="Upload Image"
+        app:layout_constraintEnd_toEndOf="@+id/ivImage"
+        app:layout_constraintStart_toStartOf="@+id/ivImage"
+        app:layout_constraintTop_toBottomOf="@+id/ivImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
