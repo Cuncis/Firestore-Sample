@@ -2,6 +2,7 @@ package com.cuncisboss.firestoresample1
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -43,6 +44,42 @@ class MainActivity : AppCompatActivity() {
 
         btnUploadImage.setOnClickListener {
             uploadImageToStorage("myImage")
+        }
+
+        btnDownloadImage.setOnClickListener {
+            downloadImage("myImage")
+        }
+
+        btnDeleteImage.setOnClickListener {
+            deleteImage("myImage")
+        }
+    }
+
+    private fun deleteImage(filename: String) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            imageRef.child("images/$filename").delete().await()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "Successfully deleted image", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun downloadImage(filename: String) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val maxDownloadSize = 5L * 1024 * 1024
+            val bytes = imageRef.child("images/$filename").getBytes(maxDownloadSize).await()
+            val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            withContext(Dispatchers.Main) {
+                ivImage.setImageBitmap(bmp)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
